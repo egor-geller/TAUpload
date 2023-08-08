@@ -171,6 +171,11 @@ namespace TAUpload.Repository
                 }
             }
         }
+        public void DeleteFileFromDB(DeleteDto dto)
+        {
+            throw new NotImplementedException();
+        }
+
         public void DeleteFileFromDB(DownloadDTO dto)
         {
             string location;

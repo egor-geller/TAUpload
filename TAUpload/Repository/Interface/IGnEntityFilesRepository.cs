@@ -9,6 +9,7 @@ namespace TAUpload.Repository.Interface
         void Save(DownloadDTO dto);
         void UpdateTeurAndFileType(DownloadDTO dto);
         void DeleteFileFromDB(DownloadDTO dto);
+        void DeleteFileFromDB(DeleteDto dto);
         void DeleteAllFiles(DownloadDTO dto);
     }
 }

@@ -39,6 +39,10 @@ namespace TAUpload.Service
         {
             await Task.Run(() => { entityFilesRepository.DeleteFileFromDB(dto); });
         }
+        public async void DeleteFileFromDB(DeleteDto dto)
+        {
+            throw new NotImplementedException();
+        }
 
         public async void DeleteLocalFile(DownloadDTO dto)
         {
@@ -69,6 +73,11 @@ namespace TAUpload.Service
                     }
                 }
             });
+        }
+
+        public async void DeleteLocalFile(DeleteDto dto)
+        {
+            throw new NotImplementedException();
         }
 
         private static string GetFullFileName(string entityOnly, string entityKey, string fullpath, string fileName)
