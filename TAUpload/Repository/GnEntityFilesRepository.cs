@@ -352,8 +352,7 @@ namespace TAUpload.Repository
                                 logger.Info($"TEUR1: {reader[0]}");
                                 return (string)reader[0];
                             }
-                        }
-                        logger.Info($"TAUpload:SelectTeur: File was found");
+                        };
                     }
                     catch (SqlException ex)
                     {
