@@ -61,7 +61,6 @@ namespace TAUpload.Service
             {
                 foreach (FileInfo file in Files)
                 {
-                    //string path = GetFullFileName(dto.EntityOnly, dto.EntityKey, fullPath, file.Name);
                     logger.Info($"TAUpload:DeleteLocalFile: Removing the file: {file.Name}");
                     try
                     {
@@ -82,7 +81,6 @@ namespace TAUpload.Service
             {
                 logger.Warn($"TAUpload:DeleteLocalFile: directory does not exists: {dto.PathName}");
             }
-            logger.Info($"TAUpload:DeleteLocalFile: DELETE DTO: {dto}");
             FileInfo[] Files = d.GetFiles(dto.EntityKey + "*"); //Getting files
             if (Files.Length >= 0)
             {
@@ -92,7 +90,6 @@ namespace TAUpload.Service
             {
                 foreach (FileInfo file in Files)
                 {
-                    //string path = GetFullFileName(dto.EntityOnly, dto.EntityKey, dto.PathName, file.Name);
                     logger.Info($"TAUpload:DeleteLocalFile: Removing the file: {file.Name}");
                     try
                     {
