@@ -41,7 +41,7 @@ namespace TAUpload.Service
         }
         public async void DeleteFileFromDB(DeleteDto dto)
         {
-            throw new NotImplementedException();
+            await Task.Run(() => { entityFilesRepository.DeleteFileFromDB(dto); });
         }
 
         public async void DeleteLocalFile(DownloadDTO dto)
@@ -52,7 +52,7 @@ namespace TAUpload.Service
             {
                 logger.Warn($"TAUpload:DeleteLocalFile: directory does not exists: {fullPath}");
             }
-            FileInfo[] Files = d.GetFiles(dto.FileName?[..dto.FileName.LastIndexOf(".")] + ".*"); //Getting Text files
+            FileInfo[] Files = d.GetFiles(dto.FileName?[..dto.FileName.LastIndexOf(".")] + "*"); //Getting files
             if (Files.Length >= 0)
             {
                 logger.Info($"TAUpload:DeleteLocalFile: There is {Files.Length} to be deleted");
@@ -61,15 +61,15 @@ namespace TAUpload.Service
             {
                 foreach (FileInfo file in Files)
                 {
-                    string path = GetFullFileName(dto.EntityOnly, dto.EntityKey, fullPath, file.Name);
-                    logger.Info($"TAUpload:DeleteLocalFile: Removing the file: {path}");
+                    //string path = GetFullFileName(dto.EntityOnly, dto.EntityKey, fullPath, file.Name);
+                    logger.Info($"TAUpload:DeleteLocalFile: Removing the file: {file.Name}");
                     try
                     {
-                        File.Delete(path);
+                        File.Delete(file.FullName);
                     }
                     catch (Exception ex)
                     {
-                        logger.Error($"TAUpload:DeleteLocalFile: Problem deleting a file {path}, \n{ex}");
+                        logger.Error($"TAUpload:DeleteLocalFile: Problem deleting a file {file.Name}, \n{ex}");
                     }
                 }
             });
@@ -77,7 +77,32 @@ namespace TAUpload.Service
 
         public async void DeleteLocalFile(DeleteDto dto)
         {
-            throw new NotImplementedException();
+            var d = new DirectoryInfo(dto.PathName);
+            if (!d.Exists)
+            {
+                logger.Warn($"TAUpload:DeleteLocalFile: directory does not exists: {dto.PathName}");
+            }
+            FileInfo[] Files = d.GetFiles(dto.FileName?[..dto.FileName.LastIndexOf(".")] + "*"); //Getting files
+            if (Files.Length >= 0)
+            {
+                logger.Info($"TAUpload:DeleteLocalFile: There is {Files.Length} to be deleted");
+            }
+            await Task.Run(() =>
+            {
+                foreach (FileInfo file in Files)
+                {
+                    //string path = GetFullFileName(dto.EntityOnly, dto.EntityKey, dto.PathName, file.Name);
+                    logger.Info($"TAUpload:DeleteLocalFile: Removing the file: {file.Name}");
+                    try
+                    {
+                        File.Delete(file.FullName);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error($"TAUpload:DeleteLocalFile: Problem deleting a file {file.Name}, \n{ex}");
+                    }
+                }
+            });
         }
 
         private static string GetFullFileName(string entityOnly, string entityKey, string fullpath, string fileName)

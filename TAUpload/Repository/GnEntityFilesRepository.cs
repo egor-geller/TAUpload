@@ -29,8 +29,7 @@ namespace TAUpload.Repository
             "DELETE FROM [dbo].[GN_ENTITY_FILES]" +
             "WHERE GN_MODULE_ID = @DbId " +
             "AND ENTITY_CODE = @ObjectType " +
-            "AND ENTITY_KEY = @EntityKey " +
-            "AND FILE_NAME = @FileName;";
+            "AND ENTITY_KEY = @EntityKey";
 
         private static readonly string SELECT_TEUR_SQL =
             "SELECT [TEUR4] " +
@@ -173,7 +172,54 @@ namespace TAUpload.Repository
         }
         public void DeleteFileFromDB(DeleteDto dto)
         {
-            throw new NotImplementedException();
+            string location;
+            if (dto.EntityOnly == "YES")
+            {
+                int numExt = (dto.FileName.Length - dto.FileName.LastIndexOf('.')) - 1;
+                string fileExt = dto.FileName.Substring(dto.FileName.LastIndexOf('.'), numExt + 1);
+                location = Path.Combine(dto.PathName, dto.EntityKey + fileExt);
+            }
+            else
+            {
+                location = Path.Combine(dto.PathName, dto.EntityKey + '-' + dto.FileName);
+            }
+            logger.Info($"TAUpload:DeleteFileFromDB: removing the files from path: {location}");
+            File.Delete(location);
+            logger.Info($"TAUpload:DeleteFileFromDB: File deleted from path: {location}");
+
+            string connectionString =
+            "Data Source=" + dto.SqlServerName +
+            ";Initial Catalog=" + dto.SqlDbName +
+            ";Integrated Security=true";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                // Create the Command and Parameter objects.
+                using (var command = new SqlCommand(DELETE_FILE_SQL, connection))
+                {
+                    command.Parameters.AddWithValue("@DbId", dto.DbId);
+                    command.Parameters.AddWithValue("@ObjectType", dto.ObjectType);
+                    command.Parameters.AddWithValue("@EntityKey", dto.EntityKey);
+
+                    // Open the connection in a try/catch block.
+                    // Create and execute the ExecuteNonQuery, writing the result
+                    // Returns No of rows changed
+                    try
+                    {
+                        connection.Open();
+                        var reader = command.ExecuteNonQuery();
+                        if (reader == 0)
+                        {
+                            logger.Warn($"TAUpload:DeleteFileFromDB: No rows were deleted");
+                        }
+                        logger.Info($"TAUpload:DeleteFileFromDB: File has been deleted from DB: {dto.FileName}");
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error($"TAUpload:DeleteFileFromDB: ERROR while deleting file {dto.FileName}: {ex}");
+                    }
+                }
+            }
         }
 
         public void DeleteFileFromDB(DownloadDTO dto)
@@ -206,7 +252,6 @@ namespace TAUpload.Repository
                     command.Parameters.AddWithValue("@DbId", dto.DbId);
                     command.Parameters.AddWithValue("@ObjectType", dto.ObjectType);
                     command.Parameters.AddWithValue("@EntityKey", dto.EntityKey);
-                    command.Parameters.AddWithValue("@FileName", dto.FileName);
 
                     // Open the connection in a try/catch block.
                     // Create and execute the ExecuteNonQuery, writing the result
