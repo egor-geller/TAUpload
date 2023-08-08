@@ -48,7 +48,7 @@ namespace TAUpload.Service
             {
                 logger.Warn($"TAUpload:DeleteLocalFile: directory does not exists: {fullPath}");
             }
-            FileInfo[] Files = d.GetFiles(dto.FileName[..dto.FileName.LastIndexOf(".")] + ".*"); //Getting Text files
+            FileInfo[] Files = d.GetFiles(dto.FileName?[..dto.FileName.LastIndexOf(".")] + ".*"); //Getting Text files
             if (Files.Length >= 0)
             {
                 logger.Info($"TAUpload:DeleteLocalFile: There is {Files.Length} to be deleted");
@@ -57,18 +57,6 @@ namespace TAUpload.Service
             {
                 foreach (FileInfo file in Files)
                 {
-                    /*if (dto.EntityOnly == "YES")
-                    {
-                        int numExt = (file.Name.Length - file.Name.LastIndexOf('.')) - 1;
-                        string fileExt = file.Name.Substring(file.Name.LastIndexOf('.'), numExt + 1);
-                        fullFileName = dto.EntityKey + fileExt;
-                        path = Path.Combine(fullPath, fullFileName);
-                    }
-                    else
-                    {
-                        fullFileName = dto.EntityKey + '-' + file.Name;
-                        path = Path.Combine(fullPath, fullFileName);
-                    }*/
                     string path = GetFullFileName(dto.EntityOnly, dto.EntityKey, fullPath, file.Name);
                     logger.Info($"TAUpload:DeleteLocalFile: Removing the file: {path}");
                     try
@@ -207,14 +195,14 @@ namespace TAUpload.Service
                         }
                         logger.Info($"TAUpload:UploadFile: File ext: {fileExt}");
 
-                        /*if (dto.Watermark)
+                        if (dto.ObjectType != null && dto.ObjectType.ToLower().Equals(@"hzm"))
                         {
-                            int statusCode = await SaveFileWithWatermark(fileExt, directory.FullName, item.FileName);
+                            int statusCode = await SaveFileWithWatermark(path);
                             if (statusCode == 415)
                             {
                                 return statusCode;
                             }
-                        }*/
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -226,22 +214,22 @@ namespace TAUpload.Service
             return 200;
         }
 
-        public async Task<int> SaveFileWithWatermark(string directory, string filename)
+        private static async Task<int> SaveFileWithWatermark(string path)
         {
-            string fileExt = System.IO.Path.GetExtension(filename);
+            string fileExt = System.IO.Path.GetExtension(path).ToLower();
             return await Task.Run(() =>
             {
                 switch (fileExt)
                 {
                     case ".docx":
                     case ".doc":
-                        ManipulateDocx(System.IO.Path.Combine(directory, filename));
+                        ManipulateDocx(path);
                         break;
                     case ".pdf":
-                        ManipulatePdf(directory, filename);
+                        ManipulatePdf(path);
                         break;
                     default:
-                        logger.Info($"TAUpload:UploadFile: Unsupported media type to manipulate {filename}");
+                        logger.Info($"TAUpload:UploadFile: Unsupported media type to manipulate {path}");
                         return 415;
                 }
                 return 200;
@@ -261,29 +249,38 @@ namespace TAUpload.Service
             });
         }
 
-        private static async void ManipulatePdf(string path, string filename)
+        private static async void ManipulatePdf(string path)
         {
             logger.Info($"TAUpload:UploadFile:ManipulatePdf: Starting watermark");
-            var filePath = System.IO.Path.Combine(path, filename);
-            var dest = System.IO.Path.Combine(path, filename + "OUT.pdf");
+            //var dest = System.IO.Path.Combine(path, "-watermark-" + filename + ".pdf");
+            string ext = System.IO.Path.GetExtension(path);
+            string dest = path[..path.LastIndexOf(".")] + "-watermark" + ext;
+            logger.Info($"{dest} and {ext}");
 
             await Task.Run(() =>
             {
-                using (var pdfDoc = new PdfDocument(new PdfReader(filePath), new PdfWriter(dest)))
+                using (var pdfDoc = new PdfDocument(new PdfReader(path), new PdfWriter(dest)))
                 {
-                    ImageData image = ImageDataFactory.Create(GetAndConvertResourceImageToByteArray());//ImageDataFactory.Create(@"C:\tmp\Upload\Sample-Watermark-Transparent.png");
-                    iText.Layout.Element.Image imageModel = new iText.Layout.Element.Image(image);
-                    AffineTransform at = AffineTransform.GetTranslateInstance(36, 300);
-                    at.Concatenate(AffineTransform.GetScaleInstance(imageModel.GetImageScaledWidth(), imageModel.GetImageScaledHeight()));
-                    var canvas = new PdfCanvas(pdfDoc.GetFirstPage());
-                    float[] matrix = new float[6];
-                    at.GetMatrix(matrix);
-                    canvas.AddImageWithTransformationMatrix(image, matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
+                    try
+                    {
+                        ImageData image = ImageDataFactory.Create(GetAndConvertResourceImageToByteArray());//ImageDataFactory.Create(@"C:\tmp\Upload\Sample-Watermark-Transparent.png");
+                        iText.Layout.Element.Image imageModel = new iText.Layout.Element.Image(image);
+                        AffineTransform at = AffineTransform.GetTranslateInstance(36, 300);
+                        at.Concatenate(AffineTransform.GetScaleInstance(imageModel.GetImageScaledWidth(), imageModel.GetImageScaledHeight()));
+                        var canvas = new PdfCanvas(pdfDoc.GetFirstPage());
+                        float[] matrix = new float[6];
+                        at.GetMatrix(matrix);
+                        canvas.AddImageWithTransformationMatrix(image, matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
+                    }
+                    catch(Exception e)
+                    {
+                        logger.Error($"TAUpload:UploadFile:ManipulatePdf: ERROR {e}");
+                    }
                 }
                 logger.Info($"TAUpload:UploadFile:ManipulatePdf: Saved watermark");
             });
 
-            await Task.Run(() =>
+            /*await Task.Run(() =>
             {
                 try
                 {
@@ -308,7 +305,7 @@ namespace TAUpload.Service
                 {
                     logger.Error($"TAUpload:UploadFile:ManipulatePdf:ERROR changing filename \n {dest} to {filePath}, \n\t{e}");
                 }
-            });
+            });*/
             logger.Info($"TAUpload:UploadFile:ManipulatePdf: Watermark saved");
         }
 
