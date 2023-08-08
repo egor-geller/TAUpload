@@ -141,8 +141,8 @@ namespace TAUpload.Service
                 {
                     entityFilesRepository.UpdateTeurAndFileType(dto);
                     string tempTeur = entityFilesRepository.SelectTeur(dto);
-                    
-                    if(!string.IsNullOrEmpty(tempTeur))
+
+                    if (!string.IsNullOrEmpty(tempTeur))
                     {
                         dto.Teur = RTL(tempTeur);
                         entityFilesRepository.UpdateTeurAndFileType(dto);
@@ -169,14 +169,15 @@ namespace TAUpload.Service
                     string[] temp = new string[len];
                     for (var i = 0; i < len; i++)
                     {
-                        if (Regex.IsMatch(item[i].ToString(), @"[a-zA-Z0-9]", RegexOptions.IgnoreCase))
+                        /*if (Regex.IsMatch(item[i].ToString(), @"[a-zA-Z0-9]", RegexOptions.IgnoreCase))
                         {
                             temp[len - i + 1] += item[i];
                         }
                         else
                         {
                             temp[i] += item[i];
-                        }
+                        }*/
+                        temp[len - i - 1] += item[i];
                     }
                     string joinString = string.Join("", temp);
                     finalString.Append(joinString).Append(' ');
@@ -304,7 +305,7 @@ namespace TAUpload.Service
                         at.GetMatrix(matrix);
                         canvas.AddImageWithTransformationMatrix(image, matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         logger.Error($"TAUpload:UploadFile:ManipulatePdf: ERROR {e}");
                     }
