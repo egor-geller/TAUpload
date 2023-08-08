@@ -66,7 +66,7 @@ namespace TAUpload.Controllers
         }
 
         [HttpDelete]
-        public async Task<ActionResult<string>> DeleteFile([FromForm] DownloadDTO dto)
+        public async Task<ActionResult<string>> DeleteFile([FromForm] DeleteDto dto)
         {
             await Task.Run(() =>
             {
