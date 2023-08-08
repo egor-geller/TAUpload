@@ -82,7 +82,8 @@ namespace TAUpload.Service
             {
                 logger.Warn($"TAUpload:DeleteLocalFile: directory does not exists: {dto.PathName}");
             }
-            FileInfo[] Files = d.GetFiles(dto.FileName?[..dto.FileName.LastIndexOf(".")] + "*"); //Getting files
+            logger.Info($"TAUpload:DeleteLocalFile: DELETE DTO: {dto}");
+            FileInfo[] Files = d.GetFiles(dto.EntityKey + "*"); //Getting files
             if (Files.Length >= 0)
             {
                 logger.Info($"TAUpload:DeleteLocalFile: There is {Files.Length} to be deleted");
