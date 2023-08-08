@@ -31,21 +31,6 @@ namespace TAUpload.Controllers
             this.gnEntityFilesService = gnEntityFilesService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<string>> GetWatermarkFile([FromForm] WatermarkDto dto)
-        {
-            if(dto.Directory == null || dto.Filename == null) 
-            {
-                return BadRequest("Directory or filename are missing");
-            }
-            int status = await gnEntityFilesService.SaveFileWithWatermark(dto.Directory, dto.Filename);
-            if(status == 415)
-            {
-                return StatusCode(status, "Unsuported Media File");
-            }
-            return Ok();
-        }
-
         [HttpPost]
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<string>> UploadFile([FromForm] DownloadDTO dto)
@@ -77,6 +62,18 @@ namespace TAUpload.Controllers
             }
 
             logger.Info($"TAUpload:UploadFile:End function UploadFile");
+            return Ok();
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult<string>> DeleteFile([FromForm] DownloadDTO dto)
+        {
+            await Task.Run(() =>
+            {
+                gnEntityFilesService.DeleteFileFromDB(dto);
+                gnEntityFilesService.DeleteLocalFile(dto);
+            });
+
             return Ok();
         }
     }
