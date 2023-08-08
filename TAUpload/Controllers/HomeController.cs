@@ -32,9 +32,18 @@ namespace TAUpload.Controllers
         }
 
         [HttpGet]
-        public string GetSome()
+        public async Task<ActionResult<string>> GetWatermarkFile([FromForm] WatermarkDto dto)
         {
-            return "Hello World";
+            if(dto.Directory == null || dto.Filename == null) 
+            {
+                return BadRequest("Directory or filename are missing");
+            }
+            int status = await gnEntityFilesService.SaveFileWithWatermark(dto.Directory, dto.Filename);
+            if(status == 415)
+            {
+                return StatusCode(status, "Unsuported Media File");
+            }
+            return Ok();
         }
 
         [HttpPost]

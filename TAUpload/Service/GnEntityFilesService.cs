@@ -207,14 +207,14 @@ namespace TAUpload.Service
                         }
                         logger.Info($"TAUpload:UploadFile: File ext: {fileExt}");
 
-                        if (dto.Watermark)
+                        /*if (dto.Watermark)
                         {
                             int statusCode = await SaveFileWithWatermark(fileExt, directory.FullName, item.FileName);
                             if (statusCode == 415)
                             {
                                 return statusCode;
                             }
-                        }
+                        }*/
                     }
                     catch (Exception ex)
                     {
@@ -226,8 +226,9 @@ namespace TAUpload.Service
             return 200;
         }
 
-        private static async Task<int> SaveFileWithWatermark(string fileExt, string directory, string filename)
+        public async Task<int> SaveFileWithWatermark(string directory, string filename)
         {
+            string fileExt = System.IO.Path.GetExtension(filename);
             return await Task.Run(() =>
             {
                 switch (fileExt)

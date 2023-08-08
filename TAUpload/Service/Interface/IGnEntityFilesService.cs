@@ -11,5 +11,6 @@ namespace TAUpload.Service.Interface
         void DeleteAllFiles(DownloadDTO dto);
         void DeleteLocalFile(DownloadDTO dto);
         Task<int> SaveLocalFile(DownloadDTO dto);
+        Task<int> SaveFileWithWatermark(string directory, string filename);
     }
 }

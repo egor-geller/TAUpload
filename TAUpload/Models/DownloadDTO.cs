@@ -31,15 +31,13 @@ namespace TAUpload.Models
         public string? LoadUserID { get; set; }
         [Required]
         public string? DbId { get; set; }
-        public bool Watermark { get; set; } = false;
         [Required]
         [FromForm]
         public List<IFormFile> Files { get; set; } = new List<IFormFile>();
 
         public override string? ToString()
         {
-            var builder = new StringBuilder();
-            return builder
+            return new StringBuilder()
                 .Append("DbId: ").Append(DbId).Append('\n')
                 .Append("LoadUserID: ").Append(LoadUserID).Append('\n')
                 .Append("ObjectType: ").Append(ObjectType).Append('\n')
@@ -54,7 +52,6 @@ namespace TAUpload.Models
                 .Append("EntityKey: ").Append(EntityKey).Append('\n')
                 .Append("Teur: ").Append(Teur).Append('\n')
                 .Append("FileTypeCd: ").Append(FileTypeCd).Append('\n')
-                .Append("Watermark: ").Append(Watermark).Append('\n')
                 .ToString();
         }
     }
