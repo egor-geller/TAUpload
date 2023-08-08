@@ -17,6 +17,8 @@ using System.Resources;
 using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using System.Text;
+using System.Diagnostics.Metrics;
+using System;
 
 namespace TAUpload.Service
 {
@@ -155,6 +157,46 @@ namespace TAUpload.Service
         private static string RTL(string teur)
         {
             string[] newStr = teur.Split(' ');
+            int count = 0;
+            string num = "";
+
+            if (!Regex.IsMatch(teur, @"[a-zA-Z]+"))
+            {
+                var finalStrings = new StringBuilder();
+                foreach (var item in newStr)
+                {
+                    if (Regex.IsMatch(item, @"[\p{IsHebrew}]+[a-zA-Z0-9]+", RegexOptions.IgnoreCase) || Regex.IsMatch(item, @"[a-zA-Z0-9]+[\p{IsHebrew}]+", RegexOptions.IgnoreCase)) // ^[\u0590-\u05FF\u200f\u200e]+$ hebrew
+                    {
+                        int len = item.Length;
+                        string[] temp = new string[len];
+                        for (var i = 0; i < len; i++)
+                        {
+                            temp[len - i - 1] += item[i];
+
+                        }
+                        string joinString = string.Join("", temp.Reverse());
+                        finalStrings.Append(joinString).Append(' ');
+
+                    }
+                    else if (Regex.IsMatch(item, @"^[\p{IsHebrew}]+$"))
+                    {
+                        finalStrings.Append(item).Append(' ');
+                    }
+                    else if (Regex.IsMatch(item, @"^[0-9]+$")) 
+                    {
+                        finalStrings.Append('‏').Append(item).Append(' ');
+                    }
+                    else
+                    {
+                        finalStrings.Append(item).Append(' ');
+
+                    }
+                }
+                return finalStrings.ToString();
+            }
+
+
+
             for (var i = 0; i < newStr.Length / 2; i++)
             {
                 (newStr[newStr.Length - i - 1], newStr[i]) = (newStr[i], newStr[newStr.Length - i - 1]);
@@ -169,17 +211,9 @@ namespace TAUpload.Service
                     string[] temp = new string[len];
                     for (var i = 0; i < len; i++)
                     {
-                        /*if (Regex.IsMatch(item[i].ToString(), @"[a-zA-Z0-9]", RegexOptions.IgnoreCase))
-                        {
-                            temp[len - i + 1] += item[i];
-                        }
-                        else
-                        {
-                            temp[i] += item[i];
-                        }*/
                         temp[len - i - 1] += item[i];
                     }
-                    string joinString = string.Join("", temp);
+                    string joinString = string.Join("", temp.Reverse());
                     finalString.Append(joinString).Append(' ');
 
                 }
