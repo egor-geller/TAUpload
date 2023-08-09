@@ -264,32 +264,6 @@ namespace TAUpload.Service
                 logger.Info($"TAUpload:UploadFile:ManipulatePdf: Saved watermark");
             });
 
-            /*await Task.Run(() =>
-            {
-                try
-                {
-                    System.IO.File.Delete(filePath);
-                    logger.Info($"TAUpload:UploadFile:ManipulatePdf: File {filename} deleted");
-                }
-                catch (Exception e)
-                {
-                    logger.Error($"TAUpload:UploadFile:ManipulatePdf:ERROR deleting file {filePath}, \n\t{e}");
-                }
-
-                try
-                {
-                    var fileInfo = new FileInfo(dest);
-                    if (fileInfo.Exists)
-                    {
-                        fileInfo.MoveTo(filePath);
-                        logger.Info($"TAUpload:UploadFile:ManipulatePdf: Rename file to {filename}");
-                    }
-                }
-                catch (Exception e)
-                {
-                    logger.Error($"TAUpload:UploadFile:ManipulatePdf:ERROR changing filename \n {dest} to {filePath}, \n\t{e}");
-                }
-            });*/
             logger.Info($"TAUpload:UploadFile:ManipulatePdf: Watermark saved");
         }
 
