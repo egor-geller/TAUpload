@@ -349,7 +349,6 @@ namespace TAUpload.Repository
                         {
                             while(reader.Read())
                             {
-                                logger.Info($"TEUR1: {reader[0]}");
                                 return (string)reader[0];
                             }
                         };

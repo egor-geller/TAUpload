@@ -8,8 +8,10 @@ namespace TAUpload.Service.Interface
         Task<int> SaveDB(DownloadDTO dto);
         void UpdateTeurAndFileType(DownloadDTO dto);
         void DeleteFileFromDB(DownloadDTO dto);
+        void DeleteFileFromDB(DeleteDto dto);
         void DeleteAllFiles(DownloadDTO dto);
         void DeleteLocalFile(DownloadDTO dto);
+        void DeleteLocalFile(DeleteDto dto);
         Task<int> SaveLocalFile(DownloadDTO dto);
     }
 }

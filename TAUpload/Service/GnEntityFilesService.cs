@@ -142,13 +142,13 @@ namespace TAUpload.Service
                 if (!string.IsNullOrEmpty(dto.Teur) && !string.IsNullOrEmpty(dto.FileTypeCd))
                 {
                     entityFilesRepository.UpdateTeurAndFileType(dto);
-                    string tempTeur = entityFilesRepository.SelectTeur(dto);
+                    /*string tempTeur = entityFilesRepository.SelectTeur(dto);
 
                     if (!string.IsNullOrEmpty(tempTeur))
                     {
                         dto.Teur = RTL(tempTeur);
                         entityFilesRepository.UpdateTeurAndFileType(dto);
-                    }
+                    }*/
                 }
             });
             return 200;
@@ -156,7 +156,8 @@ namespace TAUpload.Service
 
         private static string RTL(string teur)
         {
-            string[] newStr = teur.Split(' ');
+            return '\u202F' + teur;
+            /*string[] newStr = teur.Split(' ');
             int count = 0;
             string num = "";
 
@@ -174,7 +175,7 @@ namespace TAUpload.Service
                             temp[len - i - 1] += item[i];
 
                         }
-                        string joinString = string.Join("", temp.Reverse());
+                        string joinString = string.Join("", temp.Reverse()); 
                         finalStrings.Append(joinString).Append(' ');
 
                     }
@@ -219,7 +220,8 @@ namespace TAUpload.Service
                 }
                 else if (Regex.IsMatch(item, @"^[\p{IsHebrew}]+$"))
                 {
-                    finalString.Append(item).Append(' ');
+                    //finalString.Append('‏').Append(item).Append(' ');
+                    finalString.Append('\u2067').Append(item).Append(' ');
                 }
                 else
                 {
@@ -227,7 +229,8 @@ namespace TAUpload.Service
 
                 }
             }
-            return finalString.ToString();
+            return finalString.ToString();*/
+
         }
 
         public async void UpdateTeurAndFileType(DownloadDTO dto)
