@@ -142,95 +142,9 @@ namespace TAUpload.Service
                 if (!string.IsNullOrEmpty(dto.Teur) && !string.IsNullOrEmpty(dto.FileTypeCd))
                 {
                     entityFilesRepository.UpdateTeurAndFileType(dto);
-                    /*string tempTeur = entityFilesRepository.SelectTeur(dto);
-
-                    if (!string.IsNullOrEmpty(tempTeur))
-                    {
-                        dto.Teur = RTL(tempTeur);
-                        entityFilesRepository.UpdateTeurAndFileType(dto);
-                    }*/
                 }
             });
             return 200;
-        }
-
-        private static string RTL(string teur)
-        {
-            return '\u202F' + teur;
-            /*string[] newStr = teur.Split(' ');
-            int count = 0;
-            string num = "";
-
-            if (!Regex.IsMatch(teur, @"[a-zA-Z]+"))
-            {
-                var finalStrings = new StringBuilder();
-                foreach (var item in newStr)
-                {
-                    if (Regex.IsMatch(item, @"[\p{IsHebrew}]+[a-zA-Z0-9]+", RegexOptions.IgnoreCase) || Regex.IsMatch(item, @"[a-zA-Z0-9]+[\p{IsHebrew}]+", RegexOptions.IgnoreCase)) // ^[\u0590-\u05FF\u200f\u200e]+$ hebrew
-                    {
-                        int len = item.Length;
-                        string[] temp = new string[len];
-                        for (var i = 0; i < len; i++)
-                        {
-                            temp[len - i - 1] += item[i];
-
-                        }
-                        string joinString = string.Join("", temp.Reverse()); 
-                        finalStrings.Append(joinString).Append(' ');
-
-                    }
-                    else if (Regex.IsMatch(item, @"^[\p{IsHebrew}]+$"))
-                    {
-                        finalStrings.Append(item).Append(' ');
-                    }
-                    else if (Regex.IsMatch(item, @"^[0-9]+$")) 
-                    {
-                        finalStrings.Append('‏').Append(item).Append(' ');
-                    }
-                    else
-                    {
-                        finalStrings.Append(item).Append(' ');
-
-                    }
-                }
-                return finalStrings.ToString();
-            }
-
-
-
-            for (var i = 0; i < newStr.Length / 2; i++)
-            {
-                (newStr[newStr.Length - i - 1], newStr[i]) = (newStr[i], newStr[newStr.Length - i - 1]);
-            }
-
-            var finalString = new StringBuilder();
-            foreach (var item in newStr)
-            {
-                if (Regex.IsMatch(item, @"[\p{IsHebrew}]+[a-zA-Z0-9]+", RegexOptions.IgnoreCase) || Regex.IsMatch(item, @"[a-zA-Z0-9]+[\p{IsHebrew}]+", RegexOptions.IgnoreCase)) // ^[\u0590-\u05FF\u200f\u200e]+$ hebrew
-                {
-                    int len = item.Length;
-                    string[] temp = new string[len];
-                    for (var i = 0; i < len; i++)
-                    {
-                        temp[len - i - 1] += item[i];
-                    }
-                    string joinString = string.Join("", temp.Reverse());
-                    finalString.Append(joinString).Append(' ');
-
-                }
-                else if (Regex.IsMatch(item, @"^[\p{IsHebrew}]+$"))
-                {
-                    //finalString.Append('‏').Append(item).Append(' ');
-                    finalString.Append('\u2067').Append(item).Append(' ');
-                }
-                else
-                {
-                    finalString.Append(item).Append(' ');
-
-                }
-            }
-            return finalString.ToString();*/
-
         }
 
         public async void UpdateTeurAndFileType(DownloadDTO dto)
