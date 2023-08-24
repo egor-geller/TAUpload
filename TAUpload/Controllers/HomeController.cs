@@ -88,18 +88,16 @@ namespace TAUpload.Controllers
         public async Task<ActionResult<string>> UploadXlsFile([FromForm] ExcelDto dto)
         {
             logger.Info($"TAUpload:UploadXlsFile:Start UploadXlsFile");
-            logger.Info($"Upload file: {dto}");
             if (dto.Files == null || dto.Files.Count <= 0)
             {
                 logger.Info($"TAUpload:UploadXlsFile:The received stream is null! Aborting...");
                 return NotFound("File not found");
             }
 
-
             string columns = "ABCDEFGHIJKLMNOPQRSTUVWX";
             // Check for headers
             string[] currentCellValue = new string[columns.Length];
-            JsonItem columnsNames = await JsonFileReader.ReadAsync<JsonItem>(@"excelColums.json"); 
+            JsonItem excelData = await JsonFileReader.ReadAsync<JsonItem>(@"excelColums.json"); 
             foreach (var file in dto.Files)
             {
                 if (file.Length > 0)
@@ -109,19 +107,20 @@ namespace TAUpload.Controllers
                     using (var filestream = System.IO.File.Create(path))
                     {
                         await file.CopyToAsync(filestream);
-                        // logger
+                        logger.Info($"TAUpload:UploadXlsFile: File {file.FileName} has been saved");
 
                         for (int i = 0; i < columns.Length; i++)
                         {
-                            currentCellValue[i] = (await GetCellValue(filestream, "bakashot", columns[i] + "1")).Result.ToString();
+                            currentCellValue[i] = (await GetCellValue(filestream, excelData.sheetName, columns[i] + "1")).Result.ToString();
                         }
                     }
 
-                    for (int i = 0; i < columnsNames.columns.Length; i++)
+                    for (int i = 0; i < excelData.columns.Length; i++)
                     {
-                        if (!columnsNames.columns[i].Equals(currentCellValue[i]))
+                        if (!excelData.columns[i].Equals(currentCellValue[i]))
                         {
                             System.IO.File.Delete(path);
+                            logger.Info($"TAUpload:UploadXlsFile: File {file.FileName} has been deleted");
                             return BadRequest("Content of file is not matching the template");
                         }
                     }
