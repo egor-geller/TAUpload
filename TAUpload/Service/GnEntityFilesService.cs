@@ -228,7 +228,9 @@ namespace TAUpload.Service
 
             await Task.Run(() =>
             {
-                doc.SaveToFile(filePath, Spire.Doc.FileFormat.Docx);
+                string ext = System.IO.Path.GetExtension(filePath);
+                string dest = filePath[..filePath.LastIndexOf(".")] + "-watermark" + ext;
+                doc.SaveToFile(dest, Spire.Doc.FileFormat.Docx);
                 logger.Info($"TAUpload:UploadFile:ManipulateDocx: Watermark saved");
             });
         }

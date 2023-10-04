@@ -111,13 +111,13 @@ namespace TAUpload.Controllers
 
                         for (int i = 0; i < columns.Length; i++)
                         {
-                            currentCellValue[i] = (await GetCellValue(filestream, excelData.sheetName, columns[i] + "1")).Result.ToString();
+                            currentCellValue[i] = (await GetCellValue(filestream, excelData.SheetName, columns[i] + "1")).Result.ToString();
                         }
                     }
 
-                    for (int i = 0; i < excelData.columns.Length; i++)
+                    for (int i = 0; i < excelData.Columns.Length; i++)
                     {
-                        if (!excelData.columns[i].Equals(currentCellValue[i]))
+                        if (!excelData.Columns[i].Equals(currentCellValue[i]))
                         {
                             System.IO.File.Delete(path);
                             logger.Info($"TAUpload:UploadXlsFile: File {file.FileName} has been deleted");
